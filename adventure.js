@@ -147,4 +147,55 @@ class AdventureScene extends Phaser.Scene {
     onEnter() {
         console.warn('This AdventureScene did not implement onEnter():', this.constructor.name);
     }
+
+    //modifications begin here
+
+    floatup(item, dist, message, itemname, sound = null, duration = 500){
+        item.on('pointerdown', () => {
+            this.showMessage(message);
+            this.gainItem(itemname);
+            this.tweens.add({
+                targets: item,
+                y: `-=${dist * this.s}`,
+                alpha: { from: 1, to: 0 },
+                duration: duration,
+                onComplete: () => item.destroy()
+            });
+        });
+        if(sound != null){
+            sound.play();
+        }
+    }
+
+    flyaround(item, message, sound = null, duration = 500){
+        item.setInteractive()
+        item.on('pointerover', () => {
+            this.showMessage(message);
+            this.tweens.add({
+                targets: item,
+                x: this.s + (this.h - 2 * this.s) * Math.random(),
+                y: this.s + (this.h - 2 * this.s) * Math.random(),
+                ease: 'Sine.inOut',
+                duration: duration
+            });
+        })
+        if(sound != null){
+            sound.play();
+        }
+    }
+    addmessage(item, message){
+        item.on('pointerover', () => {
+            this.showMessage(message)
+        })
+    }
+    useitem(requreditemname, message, changeditem, changedtext, effect = function effected(){}) {
+        if (this.hasItem(requreditemname)) {
+            this.loseItem(requreditemname);
+            this.showMessage(message);
+            changeditem.setText(changedtext);
+            effect();
+        }
+    }
+
+
 }
