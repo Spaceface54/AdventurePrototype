@@ -1,9 +1,11 @@
 class AdventureScene extends Phaser.Scene {
 
-    init(data, ishooman = [], placeditems = []) {
+    init(data) {
         this.inventory = data.inventory || [];
-        this.ishooman = ishooman;
-        this.placeditems = placeditems;
+        this.ishooman = data.ishooman || [];
+        this.placeditems = data.placeditems || [3];
+        this.takenitems = data.takenitems || [];
+        this.awakehooman = data.awakehooman || false;
     }
 
     constructor(key, name) {
@@ -109,6 +111,7 @@ class AdventureScene extends Phaser.Scene {
             console.warn('gaining item already held:', item);
             return;
         }
+        this.takenitems.push(item);
         this.inventory.push(item);
         this.updateInventory();
         for (let text of this.inventoryTexts) {
@@ -149,7 +152,7 @@ class AdventureScene extends Phaser.Scene {
     gotoScene(key) {
         this.cameras.main.fade(this.transitionDuration, 0, 0, 0);
         this.time.delayedCall(this.transitionDuration, () => {
-            this.scene.start(key, { inventory: this.inventory, ishooman: this.ishooman, placeditems: this.placeditems});
+            this.scene.start(key, {inventory: this.inventory, ishooman: this.ishooman, placeditems: this.placeditems, takenitems: this.takenitems, awakehooman: this.awakehooman});
         });
     }
 
@@ -213,38 +216,83 @@ class AdventureScene extends Phaser.Scene {
             this.showMessage(message)
         })
     }
-    placeitem(requreditemname, message, changeditem, changedtext) {
+    placeitem(requreditemname, message, changeditem, changedtext, placenum) {
         if (this.hasItem(requreditemname)) {
             this.loseItem(requreditemname);
             this.showMessage(message);
             changeditem.setText(changedtext);
-            this.placeditems.push(requreditemname);
-            if((placeditems.find("Glass") != undefined) && 
-            (placeditems.find("Annoying cat toy") != undefined) && 
-            (placeditems.find("Hoomans favorite thing") != undefined)){
+            this.placeditems[placenum] = requreditemname;
+            if((this.placeditems.find(element => element == "Glass") != undefined) && 
+            (this.placeditems.find(element => element == "Annoying cat toy") != undefined) && 
+            (this.placeditems.find(element => element == "Hoomans favorite thing") != undefined)){
                 this.ishooman.push(this.name);
                 this.showMessage("Just need to meow now...")
             }
             else{
                 this.showMessage("Hmm... hooman is still not awake. Need more");
             }
+            return true;
         }
+        return false;
     }
     textinits(...items){
         items.map(items => {
             items.setInteractive();
-            items.setFontSize(this.s * 2)
+            items.setFontSize(this.s * 2);
         })
     }
-
-    placething(placement){
-        placement.on("pointerdown", ()=>{
-            console.log("clicked")
-            this.placeitem("Glass", "tink, tink", placement, "Noisy pile of glass🍺❌");
-            this.placeitem("Hoomans favorite thing", "crunch", placement, "Hoomans favorite thing📱");
-            this.placeitem("Annoying cat toy", "Squeak!!", placement, "TOY 🐁");
-        });
+    checkdestroy(item, destroykey){
+        if(this.takenitems.find(element => element = destroykey)!=undefined){
+            item.destroy();
+        }
     }
-
+    placething(placement, num){
+        if(this.placeditems[num] != undefined){
+            if(this.placeditems[num] == "Glass"){
+                placement.setText("Noisy pile of glass🍺❌")
+            }
+            if(this.placeditems[num] == "Hoomans favorite thing"){
+                placement.setText("Hoomans favorite thing📱")
+            }
+            if(this.placeditems[num] == "Annoying cat toy"){
+                placement.setText("TOY 🐁")
+            }
+        }
+        else{
+        placement.on("pointerdown", ()=>{
+            console.log("clicked");
+            if(this.placeitem("Glass", "tink, tink", placement, "Noisy pile of glass🍺❌", num)){
+                return;
+            }
+            if(this.placeitem("Hoomans favorite thing", "crunch", placement, "Hoomans favorite thing📱", num)){
+                return;
+            }
+            if(this.placeitem("Annoying cat toy", "Squeak!!", placement, "TOY 🐁", num)){
+                return;
+            }
+        });
+        }
+    }
+    hoomanmovement(name, x, y, target, duration){
+        if(this.ishooman.find(element => element == name)==undefined && this.awakehooman){
+            let hooman = this.add.text(x, y, "Hooman 😑");
+            this.textinits(hooman);
+            this.ishooman.push();
+            this.tweens.add({
+                targets: hooman,
+                x: target.x,
+                y: target.y,
+                duration: duration,
+                onComplete: () => {this.tweens.add({
+                    targets: hooman,
+                    y: `-=${2 * this.s}`,
+                    alpha: { from: 1, to: 0 },
+                    duration: 500,
+                    onComplete: () => hooman.destroy()
+                })}
+            });
+            this.ishooman.push(name);
+        }
+    }
 
 }

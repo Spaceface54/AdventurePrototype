@@ -4,37 +4,6 @@ class livingroom extends AdventureScene {
     }
 
     onEnter() {
-
-        /*let clip = this.add.text(this.w * 0.3, this.w * 0.3, "📎 paperclip")
-            .setFontSize(this.s * 2)
-            .setInteractive()
-            .on('pointerdown', () => {
-                this.showMessage("No touching!");
-                this.tweens.add({
-                    targets: clip,
-                    x: '+=' + this.s,
-                    repeat: 2,
-                    yoyo: true,
-                    ease: 'Sine.inOut',
-                    duration: 100
-                });
-            });
-        this.addmessage(clip, "metal, bent");*/
-        /*
-        let door = this.add.text(this.w * 0.1, this.w * 0.15, "🚪 locked door")
-            .setFontSize(this.s * 2)
-            .setInteractive()
-            .on('pointerover', () => {
-                if (this.hasItem("key")) {
-                    this.showMessage("You've got the key for this door.");
-                } else {
-                    this.showMessage("It's locked. Can you find a key?");
-                }
-            })
-            .on('pointerdown', () => {
-                this.useitem("key", "*squeak*", door, "unlocked door",() => this.gotoScene("demo2"));  
-            })
-        */
         let toy = this.add.text(this.w * 0.1, this.h *0.2, "TOY 🐁");
         let bag = this.add.text(this.w * 0.5, this.h *0.1, "Oooh bag 👜");
         let hthing = this.add.text(this.w * 0.35, this.h *0.7, "Hoomans favorite thing📱");
@@ -45,6 +14,10 @@ class livingroom extends AdventureScene {
         let kitchentext = this.add.text(this.w * 0.6, this.h *0.9, "Food place 🔥");
         let roomtext = this.add.text(this.w * 0.5, this.h *0.45, "hoomans' room 🚪");
         this.textinits(toy, bag, hthing,bowltext, kitchentext, roomtext);
+
+        this.checkdestroy(toy, "Annoying cat toy");
+        this.checkdestroy(hthing, "Hoomans favorite thing");
+
 
         this.addmessage(toy, "*squeak*");
         this.addmessage(bag, "Oh, comforting darkness");
@@ -67,6 +40,16 @@ class livingroom extends AdventureScene {
         roomtext.on("pointerdown", ()=>{
             this.gotoScene("roomdoor");
         })
+
+        if(this.ishooman.find(element => element == "Kitchen")==undefined){
+            this.hoomanmovement(this.name, roomtext.x, roomtext.y, kitchentext, 2000);
+        }
+        else{
+            this.hoomanmovement("Kitchen2", kitchentext.x, kitchentext.y, bowl, 2000);
+            bowl.on("pointerdown", ()=>{
+                this.gotoScene("goodending");
+            })
+        }
     }
 }
 
@@ -109,6 +92,8 @@ class kitchen extends AdventureScene {
         let closettext = this.add.text(this.w*0.55, this.h*0.5, "Dark Food Hole 🚪");
         let livingroomtext = this.add.text(this.w*0.02, this.h*0.75, "Den 🛏️");
         
+        this.hoomanmovement(this.name, closettext.x, closettext.y, livingroomtext, 2000);
+
         this.textinits(closettext, livingroomtext);
         this.addmessage(closettext, "Hmmm food...");
         this.addmessage(livingroomtext, "Sleepy place");
@@ -174,17 +159,18 @@ class roomdoor extends AdventureScene {
 
         this.textinits(hooman, placement1, placement2, placement3, livingroomtext);
 
-        this.placething(placement1);
-        this.placething(placement2);
-        this.placething(placement3);
+        this.placething(placement1, 1);
+        this.placething(placement2, 2);
+        this.placething(placement3, 3);
 
         livingroomtext.on("pointerdown",()=>{
             this.gotoScene("livingroom");
         });
 
         this.meow.on("pointerdown", ()=>{
-            if(this.placeditems.length >0){
+            if(this.placeditems.length > 3){
                 hooman.setText("Awake hooman 🥱");
+                this.awakehooman = true;
                 this.time.addEvent({
                     delay: 2000,
                     loop: false,
