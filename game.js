@@ -209,7 +209,9 @@ class roomdoor extends AdventureScene {
                 }
             }
         })
-        
+        if(this.awakehooman){
+            hooman.destroy();
+        }
     }
 }
 class closet extends AdventureScene {
