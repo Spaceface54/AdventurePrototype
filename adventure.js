@@ -12,14 +12,18 @@ class AdventureScene extends Phaser.Scene {
         super(key);
         this.name = name;
     }
-
+    
+    preload(){
+        this.load.path ="./assets/";
+        this.load.audio("meow", "meowsound.mp3");
+    }
     create() {
         this.transitionDuration = 1000;
 
         this.w = this.game.config.width;
         this.h = this.game.config.height;
         this.s = this.game.config.width * 0.01;
-
+        let playmeow = this.sound.add("meow");
         this.cameras.main.setBackgroundColor('#444');
         this.cameras.main.fadeIn(this.transitionDuration, 0, 0, 0);
 
@@ -43,7 +47,7 @@ class AdventureScene extends Phaser.Scene {
             .setAlpha(1)
             .setInteractive()
             .on("pointerdown", ()=>{
-                //put meow sound here
+                playmeow.play();
             })
         this.inventoryTexts = [];
         this.updateInventory();
@@ -242,7 +246,7 @@ class AdventureScene extends Phaser.Scene {
         })
     }
     checkdestroy(item, destroykey){
-        if(this.takenitems.find(element => element = destroykey)!=undefined){
+        if(this.takenitems.find(element => element == destroykey)!=undefined){
             item.destroy();
         }
     }
