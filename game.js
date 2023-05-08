@@ -66,6 +66,27 @@ class paperbag extends AdventureScene {
     }
     onEnter() {
         this.cameras.main.setBackgroundColor(0x000000);
+        let text1;
+        let text2;
+        for(let i = 0; i<10; i++){
+            text1 =this.add.text(this.s + (this.h - 2 * this.s) * Math.random(), this.s + (this.h - 2 * this.s) * Math.random(), "So cozy....");
+            text2 =this.add.text(this.s + (this.h - 2 * this.s) * Math.random(), this.s + (this.h - 2 * this.s) * Math.random(), "So dark....");
+            this.textinits(text1, text2);
+        }
+        let exittext = this.add.text(this.w * 0.6, this.h * 0.2, "Leave?");
+        this.textinits(exittext);
+        this.flyaround(exittext, "Maybe here?", null, 500);
+        exittext.setOrigin(0.5,0.5);
+        this.tweens.add({
+            targets:exittext,
+            angle: {from: -5, to: 5},
+            duration: 300,
+            yoyo: true,
+            repeat: -1
+        })
+        exittext.on("pointerdown", ()=>{
+            this.gotoScene("livingroom");
+        })
     }
 }
 
