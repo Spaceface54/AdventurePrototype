@@ -1,7 +1,8 @@
 class AdventureScene extends Phaser.Scene {
 
-    init(data) {
+    init(data, ishooman) {
         this.inventory = data.inventory || [];
+        this.ishooman = ishooman;
     }
 
     constructor(key, name) {
@@ -140,7 +141,7 @@ class AdventureScene extends Phaser.Scene {
     gotoScene(key) {
         this.cameras.main.fade(this.transitionDuration, 0, 0, 0);
         this.time.delayedCall(this.transitionDuration, () => {
-            this.scene.start(key, { inventory: this.inventory });
+            this.scene.start(key, { inventory: this.inventory, ishooman: this.ishooman});
         });
     }
 
@@ -151,7 +152,6 @@ class AdventureScene extends Phaser.Scene {
     //modifications begin here
 
     floatup(item, dist, message, itemname, sound = null, duration = 500){
-        item.setInteractive();
         item.on('pointerdown', () => {
             this.showMessage(message);
             this.gainItem(itemname);

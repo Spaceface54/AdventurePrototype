@@ -42,13 +42,15 @@ class livingroom extends AdventureScene {
         bowl.setInteractive();
         bowl.setFillStyle(0xFFFFFF);
         let bowltext = this.add.text(this.w * 0.05, this.h *0.9, "Food bowl\n(sad,empty, hungry)");
-        this.textinits(toy, bag, hthing,bowltext);
+        let kitchentext = this.add.text(this.w * 0.6, this.h *0.9, "Food place 🔥");
+        this.textinits(toy, bag, hthing,bowltext, kitchentext);
 
         this.addmessage(toy, "*squeak*");
         this.addmessage(bag, "Oh, comforting darkness");
         this.addmessage(hthing, "Maybe I shouldn't...");
         this.addmessage(bowltext, "HUNGRY HUNGRY HUNGRY");
         this.addmessage(bowl, "*sad empty noises*");
+        this.addmessage(kitchentext, "Hooman gives me food here...");
 
         this.floatup(toy, 2, "*squeak!!*", "annoying cat toy");
         this.floatup(hthing, 2, "Did it annyway", "Hoomans favorite thing");
@@ -56,6 +58,9 @@ class livingroom extends AdventureScene {
 
         bag.on("pointerdown", ()=>{
             this.gotoScene("paperbag");
+        })
+        kitchentext.on("pointerdown", ()=>{
+            this.gotoScene("kitchen");
         })
     }
 }
@@ -68,7 +73,7 @@ class paperbag extends AdventureScene {
         this.cameras.main.setBackgroundColor(0x000000);
         let text1;
         let text2;
-        for(let i = 0; i<10; i++){
+        for(let i = 0; i<5; i++){
             text1 =this.add.text(this.s + (this.h - 2 * this.s) * Math.random(), this.s + (this.h - 2 * this.s) * Math.random(), "So cozy....");
             text2 =this.add.text(this.s + (this.h - 2 * this.s) * Math.random(), this.s + (this.h - 2 * this.s) * Math.random(), "So dark....");
             this.textinits(text1, text2);
@@ -92,9 +97,63 @@ class paperbag extends AdventureScene {
 
 class kitchen extends AdventureScene {
     constructor() {
-        super("kitchen", "First Room");
+        super("kitchen", "Kitchen");
     }
     onEnter() {
+        let counter = this.add.rectangle(this.w*0.25, this.h*0.4, this.w*0.5, this.h*0.06);
+        let closettext = this.add.text(this.w*0.55, this.h*0.5, "Dark Food Hole 🚪");
+        let livingroomtext = this.add.text(this.w*0.02, this.h*0.75, "Den 🛏️");
+        
+        this.textinits(closettext, livingroomtext);
+        this.addmessage(closettext, "Hmmm food...");
+        this.addmessage(livingroomtext, "Sleepy place");
+
+        closettext.on("pointerdown",()=>{
+            this.gotoScene("closet");
+        });
+        livingroomtext.on("pointerdown",()=>{
+            this.gotoScene("livingroom");
+        });
+
+        counter.setFillStyle(0xFFFFFF);
+        for( let i  = 1; i<6; i++){
+            let cup = this.add.text(this.w *(0.1*i-0.05), this.h*0.3, "Cup?\n🍺");
+            this.textinits(cup);
+            this.addmessage(cup, "So close to the edge...")
+            let wobble;
+            cup.on('pointerover', ()=>{
+                
+                wobble = this.tweens.add({
+                    targets:cup,
+                    angle: {from: 0, to: 15},
+                    duration: 300,
+                    yoyo: true,
+                    repeat: -1
+                })
+            })
+            cup.on('pointerout', ()=>{
+                console.log("out");
+                wobble.stop()
+                cup.angle = 0;
+            })
+            cup.on('pointerdown', ()=>{
+                this.tweens.add({
+                    targets:cup,
+                    y: this.h*0.9,
+                    angle: {from: 0, to: 90},
+                    duration: 300,
+                    onComplete:()=>{
+                        let cup2 = this.add.text(cup.x, cup.y, "Glass\n🍺❌");
+                        cup2.angle = cup.angle;
+                        cup.destroy();
+                        this.textinits(cup2);
+                        this.floatup(cup2, 2, "Sparkly, loud", "Glass");
+                        this.addmessage(cup2, "Tink, Tink");
+                    }
+                })
+            })
+        }
+        
     }
 }
 class roomdoor extends AdventureScene {
@@ -118,8 +177,10 @@ class Intro extends Phaser.Scene {
     }
     create() {
         this.add.text(50,50, "Adventure awaits!").setFontSize(50);
-        this.add.text(50,100, "Click anywhere to begin.").setFontSize(20);
-        this.input.on('pointerdown', () => {
+        this.add.text(50,100, "Meow to begin").setFontSize(20);
+        let meow = this.add.text(70,100, "Meow!").setFontSize(20);
+        meow.setInteractive();
+        meow.on('pointerdown', () => {
             this.cameras.main.fade(1000, 0,0,0);
             this.time.delayedCall(1000, () => this.scene.start('livingroom'));
         });
@@ -155,7 +216,7 @@ const game = new Phaser.Game({
         width: 1920,
         height: 1080
     },
-    scene: [livingroom, Intro, paperbag, kitchen, roomdoor, goodending, badending],
+    scene: [kitchen, livingroom, Intro, paperbag, roomdoor, goodending, badending],
     title: "Adventure Game",
 });
 
