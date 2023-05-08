@@ -151,6 +151,7 @@ class AdventureScene extends Phaser.Scene {
     //modifications begin here
 
     floatup(item, dist, message, itemname, sound = null, duration = 500){
+        item.setInteractive();
         item.on('pointerdown', () => {
             this.showMessage(message);
             this.gainItem(itemname);
@@ -161,10 +162,10 @@ class AdventureScene extends Phaser.Scene {
                 duration: duration,
                 onComplete: () => item.destroy()
             });
+            if(sound != null){
+                sound.play();
+            }
         });
-        if(sound != null){
-            sound.play();
-        }
     }
 
     flyaround(item, message, sound = null, duration = 500){
@@ -178,10 +179,26 @@ class AdventureScene extends Phaser.Scene {
                 ease: 'Sine.inOut',
                 duration: duration
             });
+            if(sound != null){
+                sound.play();
+            }
         })
-        if(sound != null){
-            sound.play();
-        }
+    }
+    nonowiggle(item, dist, message, sound = null, duration = 500){
+        item.on('pointerdown', () => {
+            this.showMessage(message);
+            this.tweens.add({
+                targets: item,
+                x: '+=' + this.s*dist,
+                repeat: 2,
+                yoyo: true,
+                ease: 'Sine.inOut',
+                duration: duration
+            });
+            if(sound != null){
+                sound.play();
+            }
+        });
     }
     addmessage(item, message){
         item.on('pointerover', () => {
@@ -195,6 +212,12 @@ class AdventureScene extends Phaser.Scene {
             changeditem.setText(changedtext);
             effect();
         }
+    }
+    textinits(...items){
+        items.map(items => {
+            items.setInteractive();
+            items.setFontSize(this.s * 2)
+        })
     }
 
 

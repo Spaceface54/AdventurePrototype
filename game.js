@@ -1,11 +1,11 @@
-class Demo1 extends AdventureScene {
+class livingroom extends AdventureScene {
     constructor() {
-        super("demo1", "First Room");
+        super("livingroom", "Living room");
     }
 
     onEnter() {
 
-        let clip = this.add.text(this.w * 0.3, this.w * 0.3, "📎 paperclip")
+        /*let clip = this.add.text(this.w * 0.3, this.w * 0.3, "📎 paperclip")
             .setFontSize(this.s * 2)
             .setInteractive()
             .on('pointerdown', () => {
@@ -19,15 +19,8 @@ class Demo1 extends AdventureScene {
                     duration: 100
                 });
             });
-        this.addmessage(clip, "metal, bent");
-        let key = this.add.text(this.w * 0.5, this.w * 0.1, "🔑 key")
-            .setFontSize(this.s * 2)
-            .setInteractive()
-            .on('pointerover', () => {
-                this.showMessage("It's a nice key.")
-            })
-            this.floatup(key, 2, "keylike", "key");
-
+        this.addmessage(clip, "metal, bent");*/
+        /*
         let door = this.add.text(this.w * 0.1, this.w * 0.15, "🚪 locked door")
             .setFontSize(this.s * 2)
             .setInteractive()
@@ -41,29 +34,60 @@ class Demo1 extends AdventureScene {
             .on('pointerdown', () => {
                 this.useitem("key", "*squeak*", door, "unlocked door",() => this.gotoScene("demo2"));  
             })
+        */
+        let toy = this.add.text(this.w * 0.1, this.h *0.2, "TOY 🐁");
+        let bag = this.add.text(this.w * 0.5, this.h *0.1, "Oooh bag 👜");
+        let hthing = this.add.text(this.w * 0.35, this.h *0.7, "Hoomans favorite thing📱");
+        let bowl = this.add.circle(this.w * 0.1, this.h *0.85, 60);
+        bowl.setInteractive();
+        bowl.setFillStyle(0xFFFFFF);
+        let bowltext = this.add.text(this.w * 0.05, this.h *0.9, "Food bowl\n(sad,empty, hungry)");
+        this.textinits(toy, bag, hthing,bowltext);
 
+        this.addmessage(toy, "*squeak*");
+        this.addmessage(bag, "Oh, comforting darkness");
+        this.addmessage(hthing, "Maybe I shouldn't...");
+        this.addmessage(bowltext, "HUNGRY HUNGRY HUNGRY");
+        this.addmessage(bowl, "*sad empty noises*");
+
+        this.floatup(toy, 2, "*squeak!!*", "annoying cat toy");
+        this.floatup(hthing, 2, "Did it annyway", "Hoomans favorite thing");
+        this.nonowiggle(bowl, 1, "clink, clank", null, 200);
+
+        bag.on("pointerdown", ()=>{
+            this.gotoScene("paperbag");
+        })
     }
 }
 
-class Demo2 extends AdventureScene {
+class paperbag extends AdventureScene {
     constructor() {
-        super("demo2", "The second room has a long name (it truly does).");
+        super("paperbag", "Paper Bag");
     }
     onEnter() {
-        this.add.text(this.w * 0.3, this.w * 0.4, "just go back")
-            .setFontSize(this.s * 2)
-            .setInteractive()
-            .on('pointerover', () => {
-                this.showMessage("You've got no other choice, really.");
-            })
-            .on('pointerdown', () => {
-                this.gotoScene('demo1');
-            });
+        this.cameras.main.setBackgroundColor(0x000000);
+    }
+}
 
-        let finish = this.add.text(this.w * 0.6, this.w * 0.2, '(finish the game)')
-            .setInteractive()
-            .on('pointerdown', () => this.gotoScene('outro'));
-            this.flyaround(finish, "*giggles*");
+class kitchen extends AdventureScene {
+    constructor() {
+        super("kitchen", "First Room");
+    }
+    onEnter() {
+    }
+}
+class roomdoor extends AdventureScene {
+    constructor() {
+        super("roomdoor", "First Room");
+    }
+    onEnter() {
+    }
+}
+class closet extends AdventureScene {
+    constructor() {
+        super("closet", "First Room");
+    }
+    onEnter() {
     }
 }
 
@@ -76,14 +100,24 @@ class Intro extends Phaser.Scene {
         this.add.text(50,100, "Click anywhere to begin.").setFontSize(20);
         this.input.on('pointerdown', () => {
             this.cameras.main.fade(1000, 0,0,0);
-            this.time.delayedCall(1000, () => this.scene.start('demo1'));
+            this.time.delayedCall(1000, () => this.scene.start('livingroom'));
         });
     }
 }
 
-class Outro extends Phaser.Scene {
+class goodending extends Phaser.Scene {
     constructor() {
-        super('outro');
+        super('goodending');
+    }
+    create() {
+        this.add.text(50, 50, "That's all!").setFontSize(50);
+        this.add.text(50, 100, "Click anywhere to restart.").setFontSize(20);
+        this.input.on('pointerdown', () => this.scene.start('intro'));
+    }
+}
+class badending extends Phaser.Scene {
+    constructor() {
+        super('badending');
     }
     create() {
         this.add.text(50, 50, "That's all!").setFontSize(50);
@@ -100,7 +134,7 @@ const game = new Phaser.Game({
         width: 1920,
         height: 1080
     },
-    scene: [Intro, Demo1, Demo2, Outro],
+    scene: [livingroom, Intro, paperbag, kitchen, roomdoor, goodending, badending],
     title: "Adventure Game",
 });
 
