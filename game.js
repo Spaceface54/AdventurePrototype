@@ -43,7 +43,8 @@ class livingroom extends AdventureScene {
         bowl.setFillStyle(0xFFFFFF);
         let bowltext = this.add.text(this.w * 0.05, this.h *0.9, "Food bowl\n(sad,empty, hungry)");
         let kitchentext = this.add.text(this.w * 0.6, this.h *0.9, "Food place 🔥");
-        this.textinits(toy, bag, hthing,bowltext, kitchentext);
+        let roomtext = this.add.text(this.w * 0.5, this.h *0.45, "hoomans' room 🚪");
+        this.textinits(toy, bag, hthing,bowltext, kitchentext, roomtext);
 
         this.addmessage(toy, "*squeak*");
         this.addmessage(bag, "Oh, comforting darkness");
@@ -51,8 +52,9 @@ class livingroom extends AdventureScene {
         this.addmessage(bowltext, "HUNGRY HUNGRY HUNGRY");
         this.addmessage(bowl, "*sad empty noises*");
         this.addmessage(kitchentext, "Hooman gives me food here...");
+        this.addmessage(roomtext, "Hooman sleeps there");
 
-        this.floatup(toy, 2, "*squeak!!*", "annoying cat toy");
+        this.floatup(toy, 2, "*squeak!!*", "Annoying cat toy");
         this.floatup(hthing, 2, "Did it annyway", "Hoomans favorite thing");
         this.nonowiggle(bowl, 1, "clink, clank", null, 200);
 
@@ -61,6 +63,9 @@ class livingroom extends AdventureScene {
         })
         kitchentext.on("pointerdown", ()=>{
             this.gotoScene("kitchen");
+        })
+        roomtext.on("pointerdown", ()=>{
+            this.gotoScene("roomdoor");
         })
     }
 }
@@ -158,9 +163,51 @@ class kitchen extends AdventureScene {
 }
 class roomdoor extends AdventureScene {
     constructor() {
-        super("roomdoor", "First Room");
+        super("roomdoor", "Bedroom");
     }
     onEnter() {
+        let hooman = this.add.text(this.w*0.2, this.h*0.5, "Sleeping Hooman 😴");
+        let placement1 = this.add.text(this.w*0.4, this.h*0.1,"Place thing?");
+        let placement2 = this.add.text(this.w*0.4, this.h*0.3,"Place thing?");
+        let placement3 = this.add.text(this.w*0.4, this.h*0.6,"Place thing?");
+        let livingroomtext = this.add.text(this.w*0.55, this.h*0.9,"Den 🛏️");
+
+        this.textinits(hooman, placement1, placement2, placement3, livingroomtext);
+
+        this.placething(placement1);
+        this.placething(placement2);
+        this.placething(placement3);
+
+        livingroomtext.on("pointerdown",()=>{
+            this.gotoScene("livingroom");
+        });
+
+        this.meow.on("pointerdown", ()=>{
+            if(this.placeditems.length >0){
+                hooman.setText("Awake hooman 🥱");
+                this.time.addEvent({
+                    delay: 2000,
+                    loop: false,
+                    callback: () =>{
+                        hooman.setText("Awake hooman 😑");
+                        this.tweens.add({
+                            targets:hooman,
+                            x: livingroomtext.x,
+                            y: livingroomtext.y,
+                            duration: 2000,
+                            onComplete:()=>{
+                                this.tweens.add({
+                                    targets:hooman,
+                                    alpha:0,
+                                    duration: 500,
+                                })
+                            }
+                        })
+                    }
+                });
+            }
+        })
+        
     }
 }
 class closet extends AdventureScene {
@@ -216,7 +263,7 @@ const game = new Phaser.Game({
         width: 1920,
         height: 1080
     },
-    scene: [kitchen, livingroom, Intro, paperbag, roomdoor, goodending, badending],
+    scene: [livingroom, kitchen, Intro, paperbag, roomdoor, goodending, badending],
     title: "Adventure Game",
 });
 

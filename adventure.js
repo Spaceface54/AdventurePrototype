@@ -1,8 +1,9 @@
 class AdventureScene extends Phaser.Scene {
 
-    init(data, ishooman) {
+    init(data, ishooman = [], placeditems = []) {
         this.inventory = data.inventory || [];
         this.ishooman = ishooman;
+        this.placeditems = placeditems;
     }
 
     constructor(key, name) {
@@ -34,7 +35,14 @@ class AdventureScene extends Phaser.Scene {
             .setStyle({ fontSize: `${2 * this.s}px` })
             .setText("Inventory")
             .setAlpha(0);
-
+        this.meow = this.add.text(this.w * 0.75 + this.s, this.h * 0.56)
+            .setStyle({ fontSize: `${2 * this.s}px` })
+            .setText("Meow!")
+            .setAlpha(1)
+            .setInteractive()
+            .on("pointerdown", ()=>{
+                //put meow sound here
+            })
         this.inventoryTexts = [];
         this.updateInventory();
 
@@ -141,7 +149,7 @@ class AdventureScene extends Phaser.Scene {
     gotoScene(key) {
         this.cameras.main.fade(this.transitionDuration, 0, 0, 0);
         this.time.delayedCall(this.transitionDuration, () => {
-            this.scene.start(key, { inventory: this.inventory, ishooman: this.ishooman});
+            this.scene.start(key, { inventory: this.inventory, ishooman: this.ishooman, placeditems: this.placeditems});
         });
     }
 
@@ -205,12 +213,21 @@ class AdventureScene extends Phaser.Scene {
             this.showMessage(message)
         })
     }
-    useitem(requreditemname, message, changeditem, changedtext, effect = function effected(){}) {
+    placeitem(requreditemname, message, changeditem, changedtext) {
         if (this.hasItem(requreditemname)) {
             this.loseItem(requreditemname);
             this.showMessage(message);
             changeditem.setText(changedtext);
-            effect();
+            this.placeditems.push(requreditemname);
+            if((placeditems.find("Glass") != undefined) && 
+            (placeditems.find("Annoying cat toy") != undefined) && 
+            (placeditems.find("Hoomans favorite thing") != undefined)){
+                this.ishooman.push(this.name);
+                this.showMessage("Just need to meow now...")
+            }
+            else{
+                this.showMessage("Hmm... hooman is still not awake. Need more");
+            }
         }
     }
     textinits(...items){
@@ -218,6 +235,15 @@ class AdventureScene extends Phaser.Scene {
             items.setInteractive();
             items.setFontSize(this.s * 2)
         })
+    }
+
+    placething(placement){
+        placement.on("pointerdown", ()=>{
+            console.log("clicked")
+            this.placeitem("Glass", "tink, tink", placement, "Noisy pile of glass🍺❌");
+            this.placeitem("Hoomans favorite thing", "crunch", placement, "Hoomans favorite thing📱");
+            this.placeitem("Annoying cat toy", "Squeak!!", placement, "TOY 🐁");
+        });
     }
 
 
