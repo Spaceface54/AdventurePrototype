@@ -201,6 +201,21 @@ class closet extends AdventureScene {
         super("closet", "First Room");
     }
     onEnter() {
+        for(let i = 0; i<5; i++){
+            let text1 =this.add.text(this.s + (this.h - 2 * this.s) * Math.random(), this.s + (this.h - 2 * this.s) * Math.random(), "FOOD🅾️");
+            this.textinits(text1);
+            text1.on("pointerdown", ()=>{
+                this.gotoScene("badending");
+            });
+        }
+        let leavetext = this.add.text(this.w*0.1, this.h*0.7,"Leave?");
+        this.textinits(leavetext);
+        leavetext.setOrigin(0.5, 0.5);
+        leavetext.angle = 180;
+        leavetext.on("pointerdown", ()=>{
+            this.gotoScene("kitchen");
+        });
+
     }
 }
 
@@ -249,7 +264,7 @@ const game = new Phaser.Game({
         width: 1920,
         height: 1080
     },
-    scene: [livingroom, kitchen, Intro, paperbag, roomdoor, goodending, badending],
+    scene: [livingroom, kitchen, Intro, paperbag, roomdoor, goodending, badending, closet],
     title: "Adventure Game",
 });
 
