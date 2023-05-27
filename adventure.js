@@ -147,10 +147,12 @@ class AdventureScene extends Phaser.Scene {
                 });
             }
         }
-        this.time.delayedCall(500, () => {
+        // Isai - Removed the delayed call to avoid a small glitch where the player
+        //        could quickly place two items because the delayed call provided 
+        //        a narrow window of time (500 milliseconds) before the inventory was updated
+        //        after using/placing an item
             this.inventory = this.inventory.filter((e) => e != item);
             this.updateInventory();
-        });
     }
 
     gotoScene(key) {
